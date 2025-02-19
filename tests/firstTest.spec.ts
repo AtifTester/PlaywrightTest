@@ -46,11 +46,23 @@ test('User facing Locators', async({page}) => {
     await page.getByTitle('IoT Dashboard').click()
 })
 
-test.only('locating child elements', async({page}) => {
+test('locating child elements', async({page}) => {
     //compact finding child element 
     await page.locator('nb-card nb-radio :text-is("Option 1")').click
     //alternative find child element
     await page.locator('nb-card').locator('nb-radio').locator(':text-is("Option 1")').click
     //mix different types
     await page.locator('nb-card').getByRole('button').click()
+})
+
+test('Locate parent element', async({page}) => {
+    await page.locator('nb-card', {hasText: "Using the Grid"}).getByRole('textbox', {name: "Email"}).click()
+    await page.locator('nb-card', {has: page.locator('#inputEmail1')}).getByRole('textbox', {name: "Email"}).click()
+
+    await page.locator('nb-card').filter({hasText: 'Basic Form'}).getByRole('textbox', {name: "Email"}).click()
+    await page.locator('nb-card').filter({has: page.locator('.status-danger')}).getByRole('textbox', {name: "Password"}).click()
+
+    await page.locator('nb-card').filter({has: page.locator('nb-checkbox')}).filter({hasText: "Sign in"}).getByRole('textbox', {name: "Email"}).click()
+
+    await page.locator(':text-is("Using the Grid")').locator('..').getByRole('textbox', {name: "Email"}).click()
 })
