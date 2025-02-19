@@ -69,7 +69,7 @@ test('Locate parent element', async({page}) => {
 
 test('Reusing Locators', async({page}) =>
 {
-    const baseForm = await page.locator('nb-card').filter({hasText: "Basic form"})
+    const baseForm = page.locator('nb-card').filter({hasText: "Basic form"})
     const emailField = baseForm.getByRole('textbox', {name:"Email"})
 
     await emailField.fill('Test@tester.com')
@@ -78,4 +78,25 @@ test('Reusing Locators', async({page}) =>
     await baseForm.getByRole('button').click()
 
     await expect(emailField).toHaveValue('Test@tester.com')
+})
+
+test('extracting values', async({page}) =>{
+    //This grabs a single value
+    const basicForm = page.locator('nb-card').filter({hasText: "Basic form"})
+    const buttonText = await basicForm.locator('button').textContent()
+    expect(buttonText).toEqual('Submit')
+
+    //This checks through a group and finds one
+    const allRadioButtonLabels = await page.locator('nb-radio').allTextContents()
+    expect(allRadioButtonLabels).toContain("Option 1")
+
+    //Check against inputted values
+    const emailField = basicForm.getByRole('textbox', {name:"Email"})
+    await emailField.fill('Test@Tester.com')
+    const emailValue = await emailField.inputValue()
+    expect(emailValue).toEqual('Test@Tester.com')
+
+    //Grabs placeholders inside text boxes
+    const placeholderValue = await emailField.getAttribute('placeholder')
+    expect(placeholderValue).toEqual('Email')
 })
